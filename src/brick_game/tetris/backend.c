@@ -95,6 +95,25 @@ void game(GameState *state, UserAction_t user_action) {
   interval_nanoseconds = get_new_interval(getGameInfo()->speed);
 }
 
+void gameQt(GameState *state, UserAction_t user_action,
+            struct timespec current_time) {
+  static struct timespec last_block_time;
+  static long interval_nanoseconds = 1000000000;
+
+  if (*state == WAITING || *state == LANDING_DELAY || *state == PAUSE) {
+    userInput(user_action, true);
+  }
+
+  if ((current_time.tv_sec - last_block_time.tv_sec) * 1000000000 +
+              (current_time.tv_nsec - last_block_time.tv_nsec) >=
+          interval_nanoseconds &&
+      *state != PAUSE && *state != START) {
+    *getGameInfo() = updateCurrentState();
+    last_block_time = current_time;
+  }
+  interval_nanoseconds = get_new_interval(getGameInfo()->speed);
+}
+
 long get_new_interval(int speed) {
   long result = 1000000000;
   if (speed <= 5) {
@@ -386,20 +405,6 @@ void clean_gameData() {
     game_data = NULL;
   }
 }
-
-// void cleanup() {
-//   GameInfo_t *game_info = getGameInfo();
-//   GameData *game_data = getGameData();
-
-//   if (game_info != NULL) {
-//     for (int i = 0; i < HEIGHT; i++) {
-//       free(game_info->field[i]);
-//     }
-//     free(game_info->field);
-//     free(game_info);
-//     game_info = NULL;
-//   }
-// }
 
 void free_block(int **m) {
   for (int i = 0; i < FIGURE_HEIGHT; i++) {

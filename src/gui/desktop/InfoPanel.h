@@ -2,7 +2,10 @@
 #define INFOPANEL_H
 #include <QString>
 #include <QWidget>
+#include <array>
+#include <memory>
 
+namespace s21 {
 class InfoPanel : public QWidget {
   Q_OBJECT
  public:
@@ -14,7 +17,7 @@ class InfoPanel : public QWidget {
   void updateLevel(int level);
   void updateSpeed(int speed);
   void updatePause(bool isPaused);
-  //   void resizeEvent(QResizeEvent* event) override;
+  void updateNext(int** figure);
 
  protected:
   void paintEvent(QPaintEvent* e) override;
@@ -24,7 +27,9 @@ class InfoPanel : public QWidget {
   QString recordText;
   QString levelText;
   QString speedText;
-  bool isPaused;
+  bool isPaused = false;
+  std::array<std::array<int, 5>, 5> nextFigure;
+  bool hasNextFigure = false;
 };
-
-#endif  // INFOPANEL_H
+}  // namespace s21
+#endif

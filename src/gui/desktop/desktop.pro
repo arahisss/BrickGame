@@ -1,5 +1,5 @@
 QT       += widgets
-CONFIG += c++11
+CONFIG += c++11 
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
@@ -14,21 +14,29 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     SnakeQt.cpp \ 
+    TetrisQt.cpp \
     InfoPanel.cpp \
+    GameMenu.cpp \
     main.cpp \
     mainwindow.cpp \ 
     ../../brick_game/snake/SnakeController.cpp \
-    ../../brick_game/snake/SnakeModel.cpp
+    ../../brick_game/snake/SnakeModel.cpp \
+    ../../brick_game/tetris/backend.c \
+    ../../brick_game/tetris/figures.c
+
 
 
 HEADERS += \
     SnakeQt.h \
+    TetrisQt.h \
     InfoPanel.h \
+    GameMenu.h \
     mainwindow.h \
     ../../brick_game/snake/SnakeController.h \
     ../../brick_game/snake/SnakeModel.h \
-    ../../brick_game/snake/View.h \
-    ../../brick_game/struct.h
+    ../../brick_game/struct.h \
+    ../../brick_game/tetris/backend.h
+
 
 
 

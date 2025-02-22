@@ -5,7 +5,7 @@
 
 #include "../struct.h"
 #include "SnakeController.h"
-
+namespace s21 {
 class SnakeView {
  private:
   WINDOW *game_window;
@@ -35,7 +35,6 @@ class SnakeView {
 SnakeView::~SnakeView() {}
 
 void SnakeView::gameLoop() {
-  //   controller.state = GAME;
   while (controller->getState() != State::GAME_OVER) {
     UserAction_t user_action = getUserInput();
     controller->userInput(user_action, true);
@@ -128,5 +127,5 @@ void SnakeView::update_info_window(GameInfo_t game_info) {
   wattroff(info_window, COLOR_PAIR(2));
   wrefresh(info_window);
 }
-
+}  // namespace s21
 #endif

@@ -1,8 +1,10 @@
 #include "InfoPanel.h"
 
+#include <QColor>
 #include <QFont>
 #include <QPainter>
 
+namespace s21 {
 InfoPanel::InfoPanel(QWidget* parent) : QWidget(parent) {
   scoreText = "Score: 0";
   recordText = "Record: 0";
@@ -32,6 +34,20 @@ void InfoPanel::updateSpeed(int speed) {
 
 void InfoPanel::updatePause(bool isPaused) {
   this->isPaused = isPaused;
+  update();
+}
+
+void InfoPanel::updateNext(int** figure) {
+  if (!figure) {
+    hasNextFigure = false;
+    return;
+  }
+  for (int i = 0; i < 5; ++i) {
+    for (int j = 0; j < 5; ++j) {
+      nextFigure[i][j] = figure[i][j];
+    }
+  }
+  hasNextFigure = true;
   update();
 }
 
@@ -67,20 +83,23 @@ void InfoPanel::paintEvent(QPaintEvent* e) {
     path.closeSubpath();
     painter.fillPath(path, Qt::darkBlue);
   }
+
+  if (hasNextFigure) {
+    int cellSize = 30;
+    QColor figureColor = Qt::darkGreen;
+
+    int xOffset = 20;
+    int yOffset = 170;
+    int figPadding = 1;
+    for (int i = 0; i < 5; i++) {
+      for (int j = 0; j < 5; j++) {
+        int size = cellSize - figPadding * 2;
+        if (nextFigure[i][j] == 1) {
+          painter.fillRect((j * cellSize) + xOffset, (i * cellSize) + yOffset,
+                           size, size, figureColor);
+        }
+      }
+    }
+  }
 }
-
-// void drawPlayIcon(QPainter& painter, qreal x, qreal y, qreal size) {
-//   QPainterPath path;
-//   path.moveTo(x, y);                    // Начальная точка
-//   path.lineTo(x, y + size);             // Вниз
-//   path.lineTo(x + size, y + size / 2);  // Вправо и вверх
-//   path.closeSubpath();                  // Замыкаем треугольник
-//   painter.fillPath(path, Qt::green);    // Заливаем зеленым
-// }
-
-// void drawPauseIcon(QPainter& painter, qreal x, qreal y, qreal size) {
-//   qreal barWidth = size / 4;  // Ширина одного прямоугольника
-//   painter.fillRect(x, y, barWidth, size, Qt::yellow);  // Левый прямоугольник
-//   painter.fillRect(x + 2 * barWidth, y, barWidth, size,
-//                    Qt::yellow);  // Правый прямоугольник
-// }
+}  // namespace s21

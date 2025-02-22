@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPen>
+namespace s21 {
 
 SnakeQt::SnakeQt(SnakeController* c) : cellSize(30), controller(c) {
   setFocusPolicy(Qt::StrongFocus);
@@ -33,9 +34,8 @@ SnakeQt::SnakeQt(SnakeController* c) : cellSize(30), controller(c) {
   timer->start(controller->getSpeed() / 5);
 }
 
-SnakeQt::~SnakeQt() { delete timer; }
-
 InfoPanel* SnakeQt::getInfoPanel() { return infoPanel; }
+void SnakeQt::setState(State new_state) { controller->setState(new_state); }
 
 void SnakeQt::gameLoop() {
   int old_speed = controller->getSpeed();
@@ -45,9 +45,10 @@ void SnakeQt::gameLoop() {
     if (old_speed != controller->getSpeed()) {
       timer->setInterval(controller->getSpeed());
     }
-  } else {
+  } else if (controller->getState() == State::GAME_OVER) {
     controller->updateGameState();
     timer->stop();
+    emit gameFinished();
   }
 }
 
@@ -130,3 +131,4 @@ void SnakeQt::resizeEvent(QResizeEvent* event) {
   backgroundPainter.end();
   QWidget::resizeEvent(event);
 }
+}  // namespace s21

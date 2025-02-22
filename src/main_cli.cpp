@@ -27,9 +27,11 @@ void start_tetris() {
 }
 
 void start_snake() {
-  SnakeModel model;
-  SnakeController controller(&model);
-  SnakeView view(&controller);
+  s21::SnakeModel model;
+  s21::SnakeController controller(&model);
+  s21::SnakeView view(&controller);
+
+  controller.setState(s21::State::GAME);
   view.gameLoop();
 }
 

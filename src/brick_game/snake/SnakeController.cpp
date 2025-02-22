@@ -1,8 +1,16 @@
 #include "SnakeController.h"
 
+namespace s21 {
 SnakeController::~SnakeController() {}
 
 State SnakeController::getState() { return state; }
+void SnakeController::setState(State new_state) { state = new_state; }
+bool SnakeController::getInstantMove() { return instantMove; }
+
+void SnakeController::setInstantMove(bool newInstantMove) {
+  instantMove = newInstantMove;
+}
+
 int SnakeController::getSpeed() { return speed; }
 
 GameInfo_t SnakeController::getGameInfo() { return *model->get_gameInfo(); }
@@ -34,7 +42,7 @@ void SnakeController::handleGame() {
       if (result.ateApple) {
         state = State::EATING;
       }
-    } else {
+    } else if (!result.moved || model->isWin()) {
       state = State::GAME_OVER;
     }
 
@@ -131,3 +139,4 @@ void SnakeController::turnSnake(UserAction_t user_action) {
     instantMove = true;
   }
 }
+}  // namespace s21

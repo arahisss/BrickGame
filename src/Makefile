@@ -1,9 +1,10 @@
 G++ = g++ -Wall -Werror -Wextra --std=c++17
 GCC = gcc -Wall -Werror -Wextra
 GCOV_FLAGS= -fprofile-arcs -ftest-coverage
+GTEST = -lgtest -lpthread
 OS := $(shell uname)
 
-FRONT_DESKTOP = gui/desktop/snake/snake.pro
+FRONT_DESKTOP = gui/desktop/desktop.pro
 FRONT_CLI = gui/cli/*
 
 BACK_DESKTOP = brick_game/snake/*
@@ -15,72 +16,65 @@ else
         CHECK_FLAGS = -lcheck 
 endif
 
-all: build
-# @$(G++) main.cpp -o snake 
-# ./snake
-build: cli
+all: install test dvi dist
+
+install: cli desktop
+	@echo "'make run_cli' or 'make run_desktop' to start the game"
+
 cli:
-	@$(G++) $(BACK_CLI) $(FRONT_CLI) main_cli.cpp -o brick_game_cli -lncurses -lrt
+	@touch max_score_tetris.txt
+	@echo 0 > max_score_tetris.txt
+	@$(G++) $(BACK_CLI) $(FRONT_CLI) main_cli.cpp -o cli -lncurses -lrt 
 
 desktop:
-	rm -rf build_dir
-	mkdir build_dir
-	@cd build_dir && qmake ../$(FRONT_DESKTOP)
-	cd build_dir && make
-	mv build_dir/snake .
-	./snake
-	
+	@rm -rf build_dir
+	@mkdir build_dir
+	@touch max_score_snake.txt
+	@echo 0 > max_score_snake.txt
+	@cd build_dir && qmake ../$(FRONT_DESKTOP) 
+	@cd build_dir && make
+	@mv build_dir/desktop .
 
-install: build
-	@touch max_score.txt
-	@echo 0 > max_score.txt
-	@echo "Installation completed"
-	@echo "'make run' to start the game"
+run_desktop:
+	./desktop
 
-run:
-	./brick_game_cli
+run_cli:
+	./cli
 
 uninstall: clean
-	rm -rf max_score.txt
-	@echo "Uninstallation completed"
 
+test: test_tetris test_snake gcov_report
 
-# desktop:
-# 	rm -rf temp
-# 	mkdir temp
-# 	cd temp && qmake ../gui/desktop
-# 	cd temp && make
-# 	rm -rf temp
-# 	./snake
+test_tetris: 
+	$(GCC) tests_tetris/*.c brick_game/tetris/*.c -o test_tetris $(CHECK_FLAGS) $(GCOV_FLAGS) 
+	./test_tetris
 
-test: clean
-	$(GCC) tests/*.c $(BACK_CLI) -o test $(CHECK_FLAGS)
-	./test
+test_snake:
+	$(G++) tests_snake/test_*.cpp brick_game/snake/*.cpp -o test_snake $(GTEST) $(GCOV_FLAGS) 
+	./test_snake
 
-gcov_report: 
-	$(GCC) tests/*.c $(BACK) -o test $(CHECK_FLAGS) $(GCOV_FLAGS) 
-	./test
-	rm -rf tests.gcda
-	lcov -t "report" -o report.info --no-external -c -d .
-	genhtml  -o ./report report.info
-	rm -rf *.gcda *.gcno *.info
+gcov_report:
+	lcov -t "TetrisCoverage" -o tetris_coverage.info --no-external -c -d .
+	lcov -t "SnakeCoverage" -o snake_coverage.info --no-external -c -d .
+	lcov -a tetris_coverage.info -a snake_coverage.info -o total_coverage.info
+	genhtml -o ./gcov_report total_coverage.info
+	rm -rf *.gcda *.gcno tetris_coverage.info snake_coverage.info total_coverage.info coverage_tetris coverage_snake
 
 dvi:
 	@cd docs && doxygen Doxyfile
 
 dist:
-	tar czf docs/tetris.tar.gz ../src Makefile ../README.md docs/Doxyfile
+	tar czf docs/brick_game.tar.gz ../src Makefile ../README.md docs/Doxyfile
 
 clang: 
-	clang-format -n *.c brick_game/tetris/*.c brick_game/tetris/*.h gui/cli/*.c gui/cli/*.h tests/*.c tests/*.h
+	clang-format -n brick_game/tetris/*.c brick_game/tetris/*.h brick_game/snake/*.h brick_game/*.h brick_game/snake/*.cpp gui/cli/*.c gui/cli/*.h gui/desktop/*.cpp gui/desktop/*.h tests_tetris/*.c tests_tetris/*.h tests_snake/*.cpp tests_snake/*.h main_cli.cpp
 
 valgrind: test
-	valgrind --tool=memcheck --leak-check=yes ./test
+	valgrind --tool=memcheck --leak-check=yes ./test_snake ./test_tetris
 
 clean:
-	@rm -rf *.gcda *.gcno *.info report
-	@rm -rf ./test ./tetris max_score_tetris.txt max_score_snake.txt
-	@rm -rf docs/html docs/latex docs/tetris.tar.gz
-	rm -rf ./brick_game_cli 
-	rm -rf build_dir ./snake
+	@rm -rf *.gcda *.gcno *.info ./gcov_report coverage_tetris coverage_snake
+	@rm -rf ./snake ./tetris max_score_tetris.txt max_score_snake.txt ./test_snake ./test_tetris
+	@rm -rf docs/html docs/latex docs/brick_game.tar.gz
+	@rm -rf build_dir ./desktop gui/build-desktop-Desktop-Debug ./cli 
 

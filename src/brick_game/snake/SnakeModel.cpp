@@ -1,5 +1,5 @@
 #include "SnakeModel.h"
-
+namespace s21 {
 SnakeModel::SnakeModel() {
   game_info = new GameInfo_t();
   game_info->field = {new int *[HEIGHT] {}};
@@ -22,12 +22,14 @@ SnakeModel::~SnakeModel() {
     delete[] game_info->field[i];
   }
   delete[] game_info->field;
-  //   delete snake;
   delete game_info;
 };
 
 GameInfo_t *SnakeModel::get_gameInfo() { return game_info; }
+Coords SnakeModel::getSnakeHead() { return snake.front(); }
+
 void SnakeModel::setPause(bool is_set) { game_info->pause = is_set; }
+void SnakeModel::setScore(int new_score) { game_info->score = new_score; }
 
 void SnakeModel::updateField() {
   for (auto it = snake.begin(); it != snake.end(); it++) {
@@ -72,6 +74,8 @@ MoveResult SnakeModel::moveSnake() {
 
   return {true, didEatApple};
 }
+
+void SnakeModel::setApple(Coords new_coords) { apple = new_coords; }
 
 void SnakeModel::generateApple() {
   std::random_device rd;
@@ -140,9 +144,10 @@ bool SnakeModel::checkSameDirection(Direction new_direction) {
 int SnakeModel::get_high_score() {
   std::string line;
   std::ifstream in("max_score_snake.txt");
-  if (in.is_open()) {
-    std::getline(in, line);
+  if (!in.is_open()) {
+    return 0;
   }
+  std::getline(in, line);
   in.close();
   if (line.length() > 0) {
     return std::stoi(line);
@@ -150,7 +155,8 @@ int SnakeModel::get_high_score() {
   return 0;
 }
 
-// запись в файл рекорда
+bool SnakeModel::isWin() { return game_info->score >= 196; }
+
 void SnakeModel::write_high_score() {
   std::ofstream out;
   out.open("max_score_snake.txt");
@@ -159,3 +165,4 @@ void SnakeModel::write_high_score() {
   }
   out.close();
 }
+}  // namespace s21

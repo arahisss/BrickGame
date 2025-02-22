@@ -13,12 +13,13 @@
 #define WIDTH_WIN 700
 #define HEIGHT_WIN 600
 
+namespace s21 {
 class SnakeQt : public QWidget {
   Q_OBJECT
  public:
   SnakeQt(SnakeController* c);
-  ~SnakeQt();
   InfoPanel* getInfoPanel();
+  void setState(State new_state);
 
  protected:
   void paintEvent(QPaintEvent* e) override;
@@ -31,13 +32,13 @@ class SnakeQt : public QWidget {
   void levelChanged(int level);
   void speedChanged(int speed);
   void pauseChanged(bool isPaused);
+  void gameFinished();
 
  private slots:
   void gameLoop();
 
  private:
-  GameInfo_t gameInfo;
-  int cellSize;  // размер ячейки
+  int cellSize;
   QTimer* timer;
   SnakeController* controller;
   UserAction_t lastAction;
@@ -48,5 +49,5 @@ class SnakeQt : public QWidget {
   QFont font;
   QPen pen;
 };
-
+}  // namespace s21
 #endif

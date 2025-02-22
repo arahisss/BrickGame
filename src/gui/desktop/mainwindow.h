@@ -2,12 +2,17 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QPointer>
+#include <QStackedWidget>
 
 #include "../../brick_game/snake/SnakeController.h"
 #include "../../brick_game/snake/SnakeModel.h"
 #include "../../brick_game/struct.h"
+#include "GameMenu.h"
 #include "SnakeQt.h"
+#include "TetrisQt.h"
 
+namespace s21 {
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
@@ -15,9 +20,22 @@ class MainWindow : public QMainWindow {
   MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
+ private slots:
+  void startGame(const QString &gameName);
+  void returnToMenu();
+  void resetSnakeGame();
+  void genSnakeWindow();
+  void genTetrisWindow();
+
  private:
-  SnakeQt *snake;
-  SnakeController controller;
-  SnakeModel model;
+  s21::SnakeQt *snake;
+  s21::TetrisQt *tetris;
+  s21::SnakeController *controller;
+  s21::SnakeModel *model;
+  QPointer<s21::GameMenu> menu;
+  QStackedWidget *stackedWidget;
+  QPointer<QWidget> snakeWindow;
+  QPointer<QWidget> tetrisWindow;
 };
-#endif  // MAINWINDOW_H
+}  // namespace s21
+#endif

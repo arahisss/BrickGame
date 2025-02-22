@@ -1,35 +1,51 @@
-// #ifndef SNAKEQT_H
-// #define SNAKEQT_H
+#ifndef TETRISQT_H
+#define TETRISQT_H
 
-// #include <QKeyEvent>
-// #include <QPainter>
-// #include <QTimer>
-// #include <QWidget>
+#include <QKeyEvent>
+#include <QPainter>
+#include <QTimer>
+#include <QWidget>
 
-// #include "../../../brick_game/struct.h"
-// #include "../../../brick_game/tetris/backend.h"
-// #include "InfoPanel.h"
+#include "../../brick_game/struct.h"
+#include "../../brick_game/tetris/backend.h"
+#include "InfoPanel.h"
 
-// class TetrisQt : public QWidget {
-//   Q_OBJECT;
+namespace s21 {
+class TetrisQt : public QWidget {
+  Q_OBJECT;
 
-//  private:
-//   /* data */
-//  public:
-//   TetrisQt();
-//   ~TetrisQt();
+ public:
+  TetrisQt();
+  InfoPanel* getInfoPanel();
+  void setState(GameState new_state);
 
-//  protected:
-//   void paintEvent(QPaintEvent* e) override;
-//   void keyPressEvent(QKeyEvent* event) override;
-//   void resizeEvent(QResizeEvent* event) override;
+ protected:
+  void paintEvent(QPaintEvent* e) override;
+  void keyPressEvent(QKeyEvent* event) override;
+  void resizeEvent(QResizeEvent* event) override;
 
-//  private:
-//   GameInfo_t gameInfo;
-// };
+ signals:
+  void scoreChanged(int score);
+  void recordChanged(int record);
+  void levelChanged(int level);
+  void speedChanged(int speed);
+  void pauseChanged(bool isPaused);
+  void nextChanged(int** figure);
+  void gameFinished();
 
-// TetrisQt::TetrisQt(/* args */) {}
+ private slots:
+  void gameLoop();
 
-// TetrisQt::~TetrisQt() {}
-
-// #endif
+ private:
+  GameInfo_t gameInfo;
+  GameState state = GameState::START;
+  UserAction_t lastAction;
+  InfoPanel* infoPanel;
+  int cellSize;
+  QTimer* timer;
+  QPixmap bg;
+  QFont font;
+  QPen pen;
+};
+}  // namespace s21
+#endif

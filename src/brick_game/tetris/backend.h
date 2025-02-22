@@ -44,12 +44,26 @@ typedef struct {
 // Game logic
 void init_game_info(GameInfo_t *game_info);
 void init_game_data(GameData *game_data);
-GameData *getGameData();
-GameInfo_t *getGameInfo();
-void game(GameState *state, UserAction_t user_action);
 GameInfo_t updateCurrentState();
+void game(GameState *state, UserAction_t user_action);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 void updateGameState(GameState *state);
+void gameQt(GameState *state, UserAction_t user_action,
+            struct timespec current_time);
+GameInfo_t *getGameInfo();
+GameData *getGameData();
+
 void userInput(UserAction_t action, bool hold);
+void clean_gameInfo();
+void clean_gameData();
+
+#ifdef __cplusplus
+}
+#endif
+
 long get_new_interval(int speed);  // Bonus_3
 
 void handle_spawn(GameInfo_t *game_info, GameData *game_data);
@@ -72,9 +86,6 @@ void clean_figure(Figure *figure);
 
 void reset_gameInfo();
 void reset_gameData();
-
-void clean_gameInfo();
-void clean_gameData();
 void free_block(int **m);
 
 // Figures
